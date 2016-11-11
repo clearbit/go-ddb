@@ -1,22 +1,30 @@
-# go-ddb
+# ddb
 
-Golang DynamoDB helpers
+A collection of DynamoDB helpers written in Golang to assit with reading and writing data. 
 
-## Scan a segment
+## Installation
+
+```
+go get github.com/clearbit/go-ddb
+```
+
+## Parallel Scan
+
+To get maximum read throughput from a DynamodDB table we can leverage the [Parallel Scan](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/QueryAndScan.html#QueryAndScanParallelScan) functionality.
 
 ```go
-// follows structure of DDB table
+// structure of DDB item
 type message struct {
     name string `json:"name"`
 }
 
-// set up scanner with table name and total segments
+// new scanner with table name and total segments
 scanner := ddb.NewScanner(ddb.Config{
     TableName:     "ddb-table-name",
     TotalSegments: 150,   // calculate value: (table size GB / 2GB)
 })
 
-// provider a handler loop which processes items
+// start parallel scan w/ handler func
 scanner.Start(ddb.HandlerFunc(func(items ddb.Items) {
     for _, item := range items {
         var msg message
@@ -25,6 +33,6 @@ scanner.Start(ddb.HandlerFunc(func(items ddb.Items) {
     }
 }))
 
-// wait for all segments to complete
+// wait for all scans to complete
 scanner.Wait()
 ```
