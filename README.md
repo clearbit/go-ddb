@@ -36,3 +36,10 @@ scanner.Start(ddb.HandlerFunc(func(items ddb.Items) {
 // wait for all scans to complete
 scanner.Wait()
 ```
+
+## License
+
+go-ddb is copyright © 2016 Clearbit. It is free software, and may
+be redistributed under the terms specified in the [`LICENSE`] file.
+
+[`LICENSE`]: /MIT-LICENSE
