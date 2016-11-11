@@ -45,7 +45,7 @@ func (s *Scanner) Start(handler Handler) {
 }
 
 func (s *Scanner) handlerLoop(handler Handler, segment int) {
-	var lastEvaludatedKey map[string]*dynamodb.AttributeValue
+	var lastEvaluatedKey map[string]*dynamodb.AttributeValue
 
 	bk := &backoff.Backoff{
 		Max:    5 * time.Minute,
@@ -61,8 +61,8 @@ func (s *Scanner) handlerLoop(handler Handler, segment int) {
 		}
 
 		// last evaluated key
-		if lastEvaludatedKey != nil {
-			params.ExclusiveStartKey = lastEvaludatedKey
+		if lastEvaluatedKey != nil {
+			params.ExclusiveStartKey = lastEvaluatedKey
 		}
 
 		// scan, sleep if rate limited
@@ -86,6 +86,6 @@ func (s *Scanner) handlerLoop(handler Handler, segment int) {
 		}
 
 		// set last evaluated key
-		lastEvaludatedKey = resp.LastEvaluatedKey
+		lastEvaluatedKey = resp.LastEvaluatedKey
 	}
 }
