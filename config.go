@@ -4,6 +4,10 @@ import (
 	"expvar"
 	"log"
 	"sync"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 )
 
 const (
@@ -30,6 +34,9 @@ type Config struct {
 
 	// AwsRegion is the region the database is in. Defaults to us-west-1
 	AwsRegion string
+
+	// DDB is the initialized DynamoDB connection
+	DDB *dynamodb.DynamoDB
 }
 
 // defaults for configuration.
@@ -44,6 +51,13 @@ func (c *Config) setDefaults() {
 
 	if c.AwsRegion == "" {
 		c.AwsRegion = defaultAwsRegion
+	}
+
+	if c.DDB == nil {
+		c.DDB = dynamodb.New(
+			session.New(),
+			aws.NewConfig().WithRegion(c.AwsRegion),
+		)
 	}
 
 	if c.CompletedSegments == nil {
