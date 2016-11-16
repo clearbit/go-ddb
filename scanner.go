@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/jpillora/backoff"
 )
@@ -14,26 +13,14 @@ import (
 func NewScanner(config Config) *Scanner {
 	config.setDefaults()
 
-	svc := dynamodb.New(
-		session.New(),
-		aws.NewConfig().WithRegion(config.AwsRegion),
-	)
-
 	return &Scanner{
-		svc:    svc,
 		Config: config,
 	}
 }
 
 // Scanner is
 type Scanner struct {
-	svc *dynamodb.DynamoDB
 	Config
-}
-
-// Wait pauses program until waitgroup is fulfilled
-func (s *Scanner) Wait() {
-	s.WaitGroup.Wait()
 }
 
 // Start uses the handler function to process items for each of the total shard
@@ -44,8 +31,16 @@ func (s *Scanner) Start(handler Handler) {
 	}
 }
 
+// Wait pauses program until waitgroup is fulfilled
+func (s *Scanner) Wait() {
+	s.WaitGroup.Wait()
+}
+
 func (s *Scanner) handlerLoop(handler Handler, segment int) {
 	var lastEvaluatedKey map[string]*dynamodb.AttributeValue
+	if s.Checkpoint != nil {
+		lastEvaluatedKey = s.Checkpoint.Get(segment)
+	}
 
 	bk := &backoff.Backoff{
 		Max:    5 * time.Minute,
@@ -66,7 +61,7 @@ func (s *Scanner) handlerLoop(handler Handler, segment int) {
 		}
 
 		// scan, sleep if rate limited
-		resp, err := s.svc.Scan(params)
+		resp, err := s.Svc.Scan(params)
 		if err != nil {
 			log.Printf("scan error: %v", err)
 			time.Sleep(bk.Duration())
@@ -87,5 +82,8 @@ func (s *Scanner) handlerLoop(handler Handler, segment int) {
 
 		// set last evaluated key
 		lastEvaluatedKey = resp.LastEvaluatedKey
+		if s.Checkpoint != nil {
+			s.Checkpoint.Set(segment, lastEvaluatedKey)
+		}
 	}
 }
