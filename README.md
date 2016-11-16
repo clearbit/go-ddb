@@ -37,6 +37,17 @@ scanner.Start(ddb.HandlerFunc(func(items ddb.Items) {
 scanner.Wait()
 ```
 
+Leverage a checkpoint table to store the last evaluated key of a scan:
+
+```go
+scanner := ddb.NewScanner(ddb.Config{
+    TableName:           "ddb-table-name",
+    CheckpointTableName: "checkpoint-production",  // name of table to store last evaluated keys
+    CheckpointNamespace: "my-sample-app",          // namespace to avoid collisions with other scripts
+    TotalSegments:       150,
+})
+```
+
 ## License
 
 go-ddb is copyright © 2016 Clearbit. It is free software, and may
