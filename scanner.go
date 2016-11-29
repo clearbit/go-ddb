@@ -31,9 +31,9 @@ type Scanner struct {
 
 // Start uses the handler function to process items for each of the total shard
 func (s *Scanner) Start(handler Handler) {
-	for i := 0; i < s.TotalSegments; i++ {
+	for i := 0; i < s.SegmentSize; i++ {
 		s.waitGroup.Add(1)
-		go s.handlerLoop(handler, i)
+		go s.handlerLoop(handler, s.SegmentIndex + i)
 	}
 }
 
