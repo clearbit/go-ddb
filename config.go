@@ -24,11 +24,11 @@ type Config struct {
 	// TableName is name of table to scan
 	TableName string
 
-	// SegmentIndex determines where to start indexing from
-	SegmentIndex int
+	// SegmentOffset determines where to start indexing from
+	SegmentOffset int
 
-	// SegmentSize deterines how big a segment is
-	SegmentSize int
+	// SegmentCount deterines how big a segment is
+	SegmentCount int
 
 	// TotalSegments determines the global amount of concurrency this will use
 	TotalSegments int
@@ -58,8 +58,8 @@ func (c *Config) setDefaults() {
 		c.TotalSegments = defaultTotalSegments
 	}
 
-	if c.SegmentSize == 0 {
-		c.SegmentSize = c.TotalSegments
+	if c.SegmentCount == 0 {
+		c.SegmentCount = c.TotalSegments
 	}
 
 	if c.Svc == nil {

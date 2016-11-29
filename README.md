@@ -1,6 +1,6 @@
 # ddb
 
-A collection of DynamoDB helpers written in Golang to assit with reading and writing data. 
+A collection of DynamoDB helpers written in Golang to assit with reading and writing data.
 
 ## Installation
 
@@ -22,6 +22,8 @@ type message struct {
 scanner := ddb.NewScanner(ddb.Config{
     TableName:     "ddb-table-name",
     TotalSegments: 150,   // calculate value: (table size GB / 2GB)
+    SegmentOffset: 0, // optional param for controlling offset
+    SegmentCount:  150, // optional param for controlling how many routines get created
 })
 
 // start parallel scan w/ handler func
