@@ -33,7 +33,8 @@ type Scanner struct {
 func (s *Scanner) Start(handler Handler) {
 	for i := 0; i < s.SegmentCount; i++ {
 		s.waitGroup.Add(1)
-		go s.handlerLoop(handler, s.SegmentOffset + i)
+		segment := (s.SegmentCount * s.SegmentOffset) + i
+		go s.handlerLoop(handler, segment)
 	}
 }
 
