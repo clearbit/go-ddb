@@ -42,6 +42,9 @@ type Config struct {
 	// CheckpointNamespace is the unique namespace for checkpoints. This must be unique so
 	// checkpoints so differnt scripts can maintain their own checkpoints.
 	CheckpointNamespace string
+
+	// Limit is the number of records to return during scan
+	Limit int64
 }
 
 // defaults for configuration.
@@ -60,6 +63,10 @@ func (c *Config) setDefaults() {
 
 	if c.SegmentCount == 0 {
 		c.SegmentCount = c.TotalSegments
+	}
+
+	if c.Limit == 0 {
+		c.Limit = 1000
 	}
 
 	if c.Svc == nil {

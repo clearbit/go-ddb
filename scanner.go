@@ -62,6 +62,7 @@ func (s *Scanner) handlerLoop(handler Handler, segment int) {
 			TableName:     aws.String(s.TableName),
 			Segment:       aws.Int64(int64(segment)),
 			TotalSegments: aws.Int64(int64(s.TotalSegments)),
+			Limit:         aws.Int64(s.Config.Limit),
 		}
 
 		// last evaluated key
